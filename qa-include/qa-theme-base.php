@@ -567,7 +567,7 @@
 			
 			$this->output(
 				'<li>',
-				'<FORM '.$search['form_tags'].' class="navbar-search pull-left">',
+				'<FORM '.$search['form_tags'].' class="navbar-search pull-right">',
 				@$search['form_extra']
 			);
 			$this->search_field($search);
