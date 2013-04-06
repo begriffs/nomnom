@@ -535,18 +535,6 @@
 
 		function nav_user_search()
 		{
-
-			$this->output('<ul class="nav dropdown pull-right">
-							<li><a class="" href="/questions">Questions</a></li>
-							<li><a class="" href="/unanswered">Unanswered</a></li>
-							<li><a class="" href="/activity">Activity</a></li>
-							<li><a class="" href="/tags">Tags</a></li>
-							<li><a class="" href="/users">Users</a></li>
-							<li class="divider"></li>
-							<li><a class="" href="/ask">Ask a Question</a></li>
-							</ul>
-							</li>
-							</ul>');
 			$this->search();
 			$this->output('<li class="divider-vertical"></li>');
 			$this->nav('user');
