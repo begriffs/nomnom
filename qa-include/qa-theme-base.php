@@ -301,12 +301,9 @@
 		$this->output('<footer class="footer">
 						<div class="container">
 						<p class="pull-right"><a href="#">Back to top</a></p>
-						<p><a href="https://github.com/harshjv/q2a-bootstrap">Q2A-Bootstrap Framework</a> developed by <a href="https://github.com/harshjv">Harsh J. Vakharia</a></p>
 						<ul class="footer-links">
 						<li><a href="../">Home</a></li>
 						<li><a href="../feedback">Feedback</a></li>
-						<li><a href="http://twitter.com/harshjv">Twitter</a></li>
-						<li><a href="http://www.facebook.com/hjvakharia">Facebook</a></li>
 						</ul>
 						</div>
 						</footer>');
@@ -477,7 +474,7 @@
 		function navbar_bs_brand()
 		{
 		
-			$this->output('<a class="brand" href="https://www.inmadison.co">InMadison</a>');
+			$this->output();
 		
 		}
 		
