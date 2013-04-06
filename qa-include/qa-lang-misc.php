@@ -83,7 +83,7 @@
 		'recent_updates_content' => 'Recent updates for my content',
 		'recent_updates_favorites' => 'Recent updates for my favorites',
 		'recent_updates_title' => 'Recent updates for me',
-		'site_in_maintenance' => 'This site is currently down for maintenance - please come back soon.',
+		'site_in_maintenance' => 'Hey, The site is undergoing a maintenance - we will update it soon',
 		'suggest_favorites_add' => 'To add a question or other item to your favorites, click the ^ at the top of its page.',
 		'suggest_update_favorites' => 'For more updates, add items to ^1your favorites^2.',
 		'unblock_ip_button' => 'Unblock IP address',

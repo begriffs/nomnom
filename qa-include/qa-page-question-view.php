@@ -233,7 +233,6 @@
 	//	Buttons for operating on the question
 		
 		if (!$formrequested) { // don't show if another form is currently being shown on page
-			$clicksuffix=' onClick="qa_show_waiting_after(this, false);"'; // add to operations that write to database
 			$buttons=array();
 			
 			if ($question['editbutton'])
@@ -257,21 +256,21 @@
 			
 			if ($question['flagbutton'])
 				$buttons['flag']=array(
-					'tags' => 'NAME="q_doflag"'.$clicksuffix,
+					'tags' => 'NAME="q_doflag"',
 					'label' => qa_lang_html($question['flagtohide'] ? 'question/flag_hide_button' : 'question/flag_button'),
 					'popup' => qa_lang_html('question/flag_q_popup'),
 				);
 
 			if ($question['unflaggable'])
 				$buttons['unflag']=array(
-					'tags' => 'NAME="q_dounflag"'.$clicksuffix,
+					'tags' => 'NAME="q_dounflag"',
 					'label' => qa_lang_html('question/unflag_button'),
 					'popup' => qa_lang_html('question/unflag_popup'),
 				);
 				
 			if ($question['clearflaggable'])
 				$buttons['clearflags']=array(
-					'tags' => 'NAME="q_doclearflags"'.$clicksuffix,
+					'tags' => 'NAME="q_doclearflags"',
 					'label' => qa_lang_html('question/clear_flags_button'),
 					'popup' => qa_lang_html('question/clear_flags_popup'),
 				);
@@ -285,47 +284,48 @@
 			
 			if ($question['reopenable'])
 				$buttons['reopen']=array(
-					'tags' => 'NAME="q_doreopen"'.$clicksuffix,
+					'tags' => 'NAME="q_doreopen"',
 					'label' => qa_lang_html('question/reopen_button'),
 				);
 			
 			if ($question['moderatable']) {
 				$buttons['approve']=array(
-					'tags' => 'NAME="q_doapprove"'.$clicksuffix,
+					'tags' => 'NAME="q_doapprove"',
 					'label' => qa_lang_html('question/approve_button'),
 				);
 
 				$buttons['reject']=array(
-					'tags' => 'NAME="q_doreject"'.$clicksuffix,
+					'tags' => 'NAME="q_doreject"',
 					'label' => qa_lang_html('question/reject_button'),
 				);
 			}
 			
 			if ($question['hideable'])
 				$buttons['hide']=array(
-					'tags' => 'NAME="q_dohide"'.$clicksuffix,
+					'tags' => 'NAME="q_dohide"',
 					'label' => qa_lang_html('question/hide_button'),
 					'popup' => qa_lang_html('question/hide_q_popup'),
 				);
 				
 			if ($question['reshowable'])
 				$buttons['reshow']=array(
-					'tags' => 'NAME="q_doreshow"'.$clicksuffix,
+					'tags' => 'NAME="q_doreshow"',
 					'label' => qa_lang_html('question/reshow_button'),
 				);
 				
 			if ($question['deleteable'])
 				$buttons['delete']=array(
-					'tags' => 'NAME="q_dodelete"'.$clicksuffix,
+					'tags' => 'NAME="q_dodelete"',
 					'label' => qa_lang_html('question/delete_button'),
 					'popup' => qa_lang_html('question/delete_q_popup'),
 				);
 				
 			if ($question['claimable'])
 				$buttons['claim']=array(
-					'tags' => 'NAME="q_doclaim"'.$clicksuffix,
+					'tags' => 'NAME="q_doclaim"',
 					'label' => qa_lang_html('question/claim_button'),
 				);
+			
 			
 			if ($question['answerbutton']) // don't show if shown by default
 				$buttons['answer']=array(

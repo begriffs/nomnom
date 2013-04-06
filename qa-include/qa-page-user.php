@@ -475,7 +475,6 @@
 				
 				$qa_content['form_profile']['buttons']=array(
 					'save' => array(
-						'tags' => 'onClick="qa_show_waiting_after(this, false);"',
 						'label' => qa_lang_html('users/save_user'),
 					),
 					
@@ -506,13 +505,13 @@
 						
 						if (count($questions) && !qa_user_permit_error('permit_hide_show'))
 							$qa_content['form_profile']['buttons']['hideall']=array(
-								'tags' => 'NAME="dohideall" onClick="qa_show_waiting_after(this, false);"',
+								'tags' => 'NAME="dohideall"',
 								'label' => qa_lang_html('users/hide_all_user_button'),
 							);
 							
 						if ($loginlevel>=QA_USER_LEVEL_ADMIN)
 							$qa_content['form_profile']['buttons']['delete']=array(
-								'tags' => 'NAME="dodelete" onClick="qa_show_waiting_after(this, false);"',
+								'tags' => 'NAME="dodelete"',
 								'label' => qa_lang_html('users/delete_user_button'),
 							);
 						
@@ -536,7 +535,7 @@
 //	Information about user activity, available also with single sign-on integration
 
 	$qa_content['form_activity']=array(
-		'title' => '<A NAME="activity">'.qa_lang_html_sub('profile/activity_by_x', $userhtml).'</A>',
+		'title' => '<span NAME="activity">'.qa_lang_html_sub('profile/activity_by_x', $userhtml).'</span>',
 		
 		'style' => 'wide',
 		

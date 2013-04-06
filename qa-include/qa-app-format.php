@@ -135,7 +135,7 @@
 	{
 		if (qa_to_override(__FUNCTION__)) { $args=func_get_args(); return qa_call_override(__FUNCTION__, $args); }
 		
-		return '<A HREF="'.qa_path_html('tag/'.$tag).'"'.($microformats ? ' rel="tag"' : '').' CLASS="qa-tag-link">'.qa_html($tag).'</A>';
+		return '<span class="InlineTags Meta"><A HREF="'.qa_path_html('tag/'.$tag).'"'.($microformats ? ' rel="tag"' : '').'>'.qa_html($tag).'</A></span>';
 	}
 
 	
@@ -310,8 +310,10 @@
 				'linksnewwindow' => @$options['linksnewwindow'],
 			));
 			
-			if ($microformats)
-				$fields['content']='<DIV CLASS="entry-content">'.$fields['content'].'</DIV>';
+			if ($microformats){
+				//$fields['content']='<DIV CLASS="entry-content">'.$fields['content'].'</DIV>';
+				$fields['content']= $fields['content'];
+				}
 			
 			$fields['content']='<A NAME="'.qa_html($postid).'"></A>'.$fields['content'];
 				// this is for backwards compatibility with any existing links using the old style of anchor
@@ -1194,8 +1196,8 @@
 		$sdn=' STYLE="display:none;"';
 		
 		$field['note']=
-			'<SPAN ID="tag_examples_title"'.(count($exampletags) ? '' : $sdn).'>'.qa_lang_html('question/example_tags').'</SPAN>'.
-			'<SPAN ID="tag_complete_title"'.$sdn.'>'.qa_lang_html('question/matching_tags').'</SPAN><SPAN ID="tag_hints">';
+			'<br /><SPAN ID="tag_examples_title"'.(count($exampletags) ? '' : $sdn).'>'.qa_lang_html('question/example_tags').'</SPAN>'.
+			'<SPAN ID="tag_complete_title"'.$sdn.'>'.qa_lang_html('question/matching_tags').'</SPAN><SPAN ID="tag_hints" class="InlineTags Meta">';
 
 		foreach ($exampletags as $tag)
 			$field['note'].=str_replace('^', qa_html($tag), $template).' ';

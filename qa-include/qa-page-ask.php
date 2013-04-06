@@ -139,7 +139,8 @@
 
 	$qa_content=qa_content_prepare(false, array_keys(qa_category_path($categories, @$in['categoryid'])));
 	
-	$qa_content['title']=qa_lang_html(isset($followanswer) ? 'question/ask_follow_title' : 'question/ask_title');
+	$qa_content1['title']=qa_lang_html(isset($followanswer) ? 'question/ask_follow_title' : 'question/ask_title');
+	$qa_content['title']=$qa_content1['title'].(isset($followanswer) ? '' : ' <i class="icon-edit"></i>');
 
 	$editorname=isset($in['editor']) ? $in['editor'] : qa_opt('editor_for_qs');
 	$editor=qa_load_editor(@$in['content'], @$in['format'], $editorname);
@@ -151,7 +152,7 @@
 	$custom=qa_opt('show_custom_ask') ? trim(qa_opt('custom_ask')) : '';
 
 	$qa_content['form']=array(
-		'tags' => 'NAME="ask" METHOD="POST" ACTION="'.qa_self_html().'"',
+		'tags' => 'class="form-horizontal" NAME="ask" METHOD="POST" ACTION="'.qa_self_html().'"',
 		
 		'style' => 'tall',
 		
@@ -163,14 +164,14 @@
 			
 			'title' => array(
 				'label' => qa_lang_html('question/q_title_label'),
-				'tags' => 'NAME="title" ID="title" AUTOCOMPLETE="off"',
+				'tags' => 'NAME="title" ID="title" AUTOCOMPLETE="off" class="input-xxlarge"',
 				'value' => qa_html(@$in['title']),
 				'error' => qa_html(@$errors['title']),
 			),
 			
 			'similar' => array(
 				'type' => 'custom',
-				'html' => '<SPAN ID="similar"></SPAN>',
+				'html' => '<br><ul class="thumbnails"><li class="span6"><div class="thumbnail"><div class="caption"><SPAN ID="similar">We will check simillar questions as you type </SPAN></div></div></li></ul>',
 			),
 			
 			'content' => $field,
@@ -178,8 +179,7 @@
 		
 		'buttons' => array(
 			'ask' => array(
-				'tags' => 'onClick="qa_show_waiting_after(this, false); '.
-					(method_exists($editor, 'update_script') ? $editor->update_script('content') : '').'"',
+				'tags' => method_exists($editor, 'update_script') ? ('onClick="'.$editor->update_script('content').'"') : '',
 				'label' => qa_lang_html('question/ask_button'),
 			),
 		),

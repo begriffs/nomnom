@@ -294,7 +294,7 @@
 
 	$lines[]='<title>'.qa_html($sitetitle.' - '.$title).'</title>';
 	$lines[]='<link>'.qa_path_html($linkrequest, $linkparams, $siteurl).'</link>';
-	$lines[]='<description>Powered by Question2Answer</description>';
+	$lines[]='<description>Feeds</description>';
 	
 	foreach ($questions as $question) {
 

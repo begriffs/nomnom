@@ -1,32 +1,7 @@
 <?php
-
-/*
-	Question2Answer (c) Gideon Greenspan
-
-	http://www.question2answer.org/
-
 	
-	File: qa-include/qa-base.php
-	Version: See define()s at top of qa-include/qa-base.php
-	Description: Sets up Q2A environment, plus many globally useful functions
-
-
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
-	
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	More about this license: http://www.question2answer.org/license.php
-*/
-
-	
-	define('QA_VERSION', '1.5.4'); // also used as suffix for .js and .css requests
-	define('QA_BUILD_DATE', '2012-11-29');
+	define('QA_VERSION', '1.5.3'); // also used as suffix for .js and .css requests
+	define('QA_BUILD_DATE', '2012-09-26');
 
 //	Execution section of this file - remainder contains function definitions
 
@@ -715,16 +690,13 @@
 	}
 	
 	
-	function qa_sanitize_html_hook_tag($element, $attributes=null)
+	function qa_sanitize_html_hook_tag($element, $attributes)
 /*
 	htmLawed hook function used to process tags in qa_sanitize_html(...)
 */
 	{
 		global $qa_sanitize_html_newwindow;
 
-		if (!isset($attributes)) // it's a closing tag
-			return '</'.$element.'>';
-		
 		if ( ($element=='param') && (trim(strtolower(@$attributes['name']))=='allowscriptaccess') )
 			$attributes['name']='allowscriptaccess_denied';
 			
@@ -1256,7 +1228,7 @@
 	{
 		if (qa_to_override(__FUNCTION__)) { $args=func_get_args(); return qa_call_override(__FUNCTION__, $args); }
 		
-		return 'feed/'.$feed.'.rss';
+		return 'feed/qa.rss';
 	}
 	
 	

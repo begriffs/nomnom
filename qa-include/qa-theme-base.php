@@ -1,28 +1,5 @@
 <?php
 
-/*
-	Question2Answer (c) Gideon Greenspan
-
-	http://www.question2answer.org/
-
-	
-	File: qa-include/qa-theme-base.php
-	Version: See define()s at top of qa-include/qa-base.php
-	Description: Default theme class, broken into lots of little functions for easy overriding
-
-
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
-	
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	More about this license: http://www.question2answer.org/license.php
-*/
 
 	if (!defined('QA_VERSION')) { // don't allow this page to be requested directly from browser
 		header('Location: ../');
@@ -43,7 +20,7 @@
 
 	class qa_html_theme_base {
 	
-		var	$indent=0;
+		var $indent=0;
 		var $lines=0;
 		var $context=array();
 		
@@ -150,15 +127,10 @@
 	*/
 		{
 			if (count(@$this->content['widgets'][$region][$place])) {
-				$this->output('<DIV CLASS="qa-widgets-'.$region.' qa-widgets-'.$region.'-'.$place.'">');
 				
 				foreach ($this->content['widgets'][$region][$place] as $module) {
-					$this->output('<DIV CLASS="qa-widget-'.$region.' qa-widget-'.$region.'-'.$place.'">');
 					$module->output_widget($region, $place, $this, $this->template, $this->request, $this->content);
-					$this->output('</DIV>');
 				}
-				
-				$this->output('</DIV>', '');
 			}
 		}
 		
@@ -169,11 +141,7 @@
 	*/
 		{
 			if ($this->indent)
-				echo "<!--\nIt's no big deal, but your HTML could not be indented properly. To fix, please:\n".
-					"1. Use this->output() to output all HTML.\n".
-					"2. Balance all paired tags like <TD>...</TD> or <DIV>...</DIV>.\n".
-					"3. Use a slash at the end of unpaired tags like <img/> or <input/>.\n".
-					"Thanks!\n-->\n";
+				echo "";
 		}
 
 		
@@ -184,22 +152,22 @@
 
 		function doctype()
 		{
-			$this->output('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">');
+			$this->output(
+			'<!DOCTYPE html>');
 		}
 		
 		function html()
 		{
 			$this->output(
-				'<HTML>',
-				'<!-- Powered by Question2Answer - http://www.question2answer.org/ -->'
+				'<html lang="en">'
 			);
 			
 			$this->head();
-			$this->body();
+			
+			$this->body();   //   Q2A-BS Body Part
 			
 			$this->output(
-				'<!-- Powered by Question2Answer - http://www.question2answer.org/ -->',
-				'</HTML>'
+				'</html>'
 			);
 		}
 		
@@ -259,6 +227,13 @@
 			if (isset($this->content['script']))
 				foreach ($this->content['script'] as $scriptline)
 					$this->output_raw($scriptline);
+					
+			$this->output(
+				'<SCRIPT TYPE="text/javascript"><!--',
+				'if (qa_wysiwyg_editor_config)',
+				'qa_wysiwyg_editor_config.skin="kama";',
+				'//--></SCRIPT>'
+			);
 		}
 		
 		function head_css()
@@ -279,7 +254,7 @@
 		
 		function css_name()
 		{
-			return 'qa-styles.css?'.QA_VERSION;
+			return 'qa-styles.css';
 		}
 		
 		function head_lines()
@@ -296,19 +271,56 @@
 		
 		function body()
 		{
-			$this->output('<BODY');
-			$this->body_tags();
-			$this->output('>');
+			$this->output('<body>');
 			
 			$this->body_script();
+			
 			$this->body_header();
-			$this->body_content();
-			$this->body_footer();
+			
+			$this->bs_body();   //   Bootstrap Body
+			
+			$this->bootstrap_script();   // Required Twitter Bootstrap JS files
+			
 			$this->body_hidden();
-				
-			$this->output('</BODY>');
+			
+			$this->output('</body>');
 		}
 		
+		function bs_body()
+		{
+			$this->navbar_bs();   //   It's time for Bootstrap Navigation...
+
+			$this->body_content();
+
+			$this->bs_footer();   //   Bootstrap Footer
+		}
+		
+		function bs_footer()
+		{
+		
+		$this->output('<footer class="footer">
+						<div class="container">
+						<p class="pull-right"><a href="#">Back to top</a></p>
+						<p><a href="https://github.com/harshjv/q2a-bootstrap">Q2A-Bootstrap Framework</a> developed by <a href="https://github.com/harshjv">Harsh J. Vakharia</a></p>
+						<ul class="footer-links">
+						<li><a href="../">Home</a></li>
+						<li><a href="../feedback">Feedback</a></li>
+						<li><a href="http://twitter.com/harshjv">Twitter</a></li>
+						<li><a href="http://www.facebook.com/hjvakharia">Facebook</a></li>
+						</ul>
+						</div>
+						</footer>');
+		
+		}
+		
+		function bootstrap_script()
+		{
+			$this->output(
+			'<script src="../assets/js/bootstrap.min.js"></script>
+			<script src="../assets/js/jquery.js"></script>'
+			);
+		}
+
 		function body_hidden()
 		{
 			$this->output('<DIV STYLE="position:absolute; left:-9999px; top:-9999px;">');
@@ -318,7 +330,7 @@
 		
 		function waiting_template()
 		{
-			$this->output('<SPAN ID="qa-waiting-template" CLASS="qa-waiting">...</SPAN>');
+			$this->output('<SPAN ID="waiting-theme" CLASS="qa-waiting">&nbsp;<img src="../assets/img/loading.gif" alt="Loading..."/></SPAN>');
 		}
 		
 		function body_script()
@@ -347,22 +359,51 @@
 		{
 			$this->body_prefix();
 			$this->notices();
-			
-			$this->output('<DIV CLASS="qa-body-wrapper">', '');
-
 			$this->widgets('full', 'top');
 			$this->header();
+			$this->output('<div class="container">');
+			$this->output('<div class="row">');
 			$this->widgets('full', 'high');
-			$this->sidepanel();
+			$this->output('<div class="span12">');
 			$this->main();
+			$this->output('</div>');
+			$this->output('</div>');
+			$this->output('</div>');
 			$this->widgets('full', 'low');
-			$this->footer();
 			$this->widgets('full', 'bottom');
-			
-			$this->output('</DIV> <!-- END body-wrapper -->');
-			
 			$this->body_suffix();
 		}
+		
+		/*
+		
+		=============================
+		Custom Ask Widget //Removed
+		=============================
+		
+		function custom_ask_widget()
+		{
+		
+		if (isset($qa_content['categoryids']))
+				$params=array('cat' => end($qa_content['categoryids']));
+			else
+				$params=null;
+		$this->output('<FORM METHOD="POST" ACTION="'.qa_path_html('ask', $params).'">
+				<center><INPUT NAME="title" TYPE="text" placeholder="Your Question" CLASS="input span2" onfocus="onFocus(this);" onblur="onBlur(this);"></center>
+				<script type="text/javascript">
+    function onFocus(element) {
+        element.className = "input span23";
+		element.placeholder = "Your Question";
+    }
+    function onBlur(element) {
+        element.className = "input class span2";
+		element.placeholder = "Give it a try";
+    }
+</script>
+				<INPUT TYPE="hidden" NAME="doask1" VALUE="1">
+				</FORM>');
+		
+		} */
+		
 		
 		function body_tags()
 		{
@@ -409,28 +450,126 @@
 			$this->output('</DIV>');
 		}		
 		
-		function header()
+		function navbar_bs()
 		{
-			$this->output('<DIV CLASS="qa-header">');
+			$this->output('<div class="navbar navbar-fixed-top"><div class="navbar-inner"><div class="container">');
 			
-			$this->logo();
+			$this->navbar_bs_button();
+			$this->navbar_bs_brand();
+			
+			$this->output('<div class="nav-collapse collapse"><ul class="nav">');
 			$this->nav_user_search();
-			$this->nav_main_sub();
-			$this->header_clear();
-			
-			$this->output('</DIV> <!-- END qa-header -->', '');
+			$this->output('</ul></div>');
+			$this->output('</div></div></div>');
 		}
 		
+		function navbar_bs_button()
+		{
+		
+			$this->output('<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							</button>');
+		
+		}
+		
+		function navbar_bs_brand()
+		{
+		
+			$this->output('<a class="brand" href="https://github.com/harshjv/q2a-bootstrap">Q2A-BS</a>');
+		
+		}
+		
+		function header()
+		{
+			/*
+			=========================
+			Big Jumbotron //Removed
+			=========================
+			
+			$this->output('<div class="jumbotron masthead">
+							<div class="container">
+							<h1>Q2A-Bootstrap</h1>
+							<p class="lead">Sweet and Clean Twitter Bootstrap Theme for Question2Answer.org</p>
+							<p><a href="../ask" class="btn btn-primary btn-large" >Getting Started</a></p>
+							<ul class="masthead-links">
+							<li><a href="../" >Home</a></li>
+							<li>Developed by <a href="https://github.com/harshjv">Harsh J. Vakharia</a></li>
+							</ul>
+							</div>
+							</div>');*/
+			
+			
+			
+			//$this->below_navbar();
+			$this->output('<div class="navbar">
+						<div class="navbar-inner">');
+			$this->nav_main_sub();
+			$this->output('</div></div>');//
+		}
+		
+		function below_navbar()
+		{
+		
+		$this->output('<div class="bs-docs-social">
+						<div class="container">
+						<ul class="bs-docs-social-buttons">
+						<li class="muted">Q2A-Bootstrap Framework v1.1</li>
+						<li>
+						<iframe src="http://ghbtns.com/github-btn.html?user=harshjv&repo=q2a-bootstrap&type=watch" allowtransparency="true" frameborder="0" scrolling="0" width="62px" height="20px"></iframe>
+						</li>
+						<li>
+						<iframe src="http://ghbtns.com/github-btn.html?user=harshjv&repo=q2a-bootstrap&type=fork" allowtransparency="true" frameborder="0" scrolling="0" width="53px" height="20px"></iframe>
+						</li>
+						<li class="follow-btn">
+						<a href="https://twitter.com/harshjv" class="twitter-follow-button" data-show-count="false">Follow @harshjv</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+						</li>
+						<li class="tweet-btn">
+						<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://github.com/harshjv" data-text="Sweet and Clean Twitter Bootstrap Theme for Question2Answer.org Developed by Harsh Vakharia" data-via="harshjv" data-count="none">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+						</li>
+						</ul>
+						</div>
+						</div>');
+		
+		}
+
 		function nav_user_search()
 		{
-			$this->nav('user');
+
+			$this->output('<ul class="nav">
+							<li><a href="/">Home</a></li>
+							<li class="divider-vertical"></li>
+							<li class="dropdown">
+							<a data-toggle="dropdown" class="dropdown-toggle" role="button" href="#" id="drop1">Browse <b class="caret"></b></a>
+							<ul aria-labelledby="drop1" role="menu" class="dropdown-menu">
+							<li><a class="" href="/questions">Questions</a></li>
+							<li><a class="" href="/unanswered">Unanswered</a></li>
+							<li><a class="" href="/activity">Activity</a></li>
+							<li><a class="" href="/tags">Tags</a></li>
+							<li><a class="" href="/users">Users</a></li>
+							<li class="divider"></li>
+							<li><a class="" href="/ask">Ask a Question</a></li>
+							</ul>
+							</li>
+							</ul>');
 			$this->search();
+			$this->output('<li class="divider-vertical"></li>');
+			$this->nav('user');
 		}
 		
 		function nav_main_sub()
 		{
+			$this->output('<ul class="nav nav-pills">');
 			$this->nav('main');
+			$this->output('</ul>');
+			$this->output('<div class="qa-nav-main-clear"></div>');
+			$this->output('<div style="height: 40px;"></div>');
+			$this->output('<ul class="nav pager">');
 			$this->nav('sub');
+			$this->output('</ul>');
 		}
 		
 		function logo()
@@ -447,28 +586,26 @@
 			$search=$this->content['search'];
 			
 			$this->output(
-				'<DIV CLASS="qa-search">',
-				'<FORM '.$search['form_tags'].'>',
+				'<li>',
+				'<FORM '.$search['form_tags'].' class="navbar-search pull-left">',
 				@$search['form_extra']
 			);
-			
 			$this->search_field($search);
-			$this->search_button($search);
-			
+
 			$this->output(
 				'</FORM>',
-				'</DIV>'
+				'</li>'
 			);
 		}
 		
 		function search_field($search)
 		{
-			$this->output('<INPUT TYPE="text" '.$search['field_tags'].' VALUE="'.@$search['value'].'" CLASS="qa-search-field"/>');
+			$this->output('<INPUT TYPE="text" '.$search['field_tags'].' placeholder="Search" VALUE="'.@$search['value'].'" class="search-query span2"/>');
 		}
 		
 		function search_button($search)
 		{
-			$this->output('<INPUT TYPE="submit" VALUE="'.$search['button_label'].'" CLASS="qa-search-button"/>');
+			$this->output('<INPUT TYPE="submit" VALUE="'.$search['button_label'].'" CLASS="btn"/>');
 		}
 		
 		function nav($navtype, $level=null)
@@ -476,7 +613,6 @@
 			$navigation=@$this->content['navigation'][$navtype];
 			
 			if (($navtype=='user') || isset($navigation)) {
-				$this->output('<DIV CLASS="qa-nav-'.$navtype.'">');
 				
 				if ($navtype=='user')
 					$this->logged_in();
@@ -490,16 +626,17 @@
 				
 				$this->set_context('nav_type', $navtype);
 				$this->nav_list($navigation, 'nav-'.$navtype, $level);
-				$this->nav_clear($navtype);
+				
+				if (!($navtype=='user'))
+					$this->nav_clear($navtype);
+					
 				$this->clear_context('nav_type');
 	
-				$this->output('</DIV>');
 			}
 		}
 		
 		function nav_list($navigation, $class, $level=null)
 		{
-			$this->output('<UL CLASS="qa-'.$class.'-list'.(isset($level) ? (' qa-'.$class.'-list-'.$level) : '').'">');
 
 			$index=0;
 			
@@ -512,7 +649,6 @@
 			$this->clear_context('nav_key');
 			$this->clear_context('nav_index');
 			
-			$this->output('</UL>');
 		}
 		
 		function nav_clear($navtype)
@@ -525,8 +661,9 @@
 		
 		function nav_item($key, $navlink, $class, $level=null)
 		{
-			$this->output('<LI CLASS="qa-'.$class.'-item'.(@$navlink['opposite'] ? '-opp' : '').
-				(@$navlink['state'] ? (' qa-'.$class.'-'.$navlink['state']) : '').' qa-'.$class.'-'.$key.'">');
+			$this->output('<LI CLASS="'.(@$navlink['selected'] ? ('active') : '').'"'.
+					(strlen(@$navlink['popup']) ? (' TITLE="'.$navlink['popup'].'"') : '').
+					(isset($navlink['target']) ? (' TARGET="'.$navlink['target'].'"') : '').'>');
 			$this->nav_link($navlink, $class);
 			
 			if (count(@$navlink['subnav']))
@@ -537,12 +674,12 @@
 		
 		function nav_link($navlink, $class)
 		{
+			$hot_label_name_custom = "Hot!";
 			if (isset($navlink['url'])) {
 				$this->output(
-					'<A HREF="'.$navlink['url'].'" CLASS="qa-'.$class.'-link'.
-					(@$navlink['selected'] ? (' qa-'.$class.'-selected') : '').'"'.
-					(strlen(@$navlink['popup']) ? (' TITLE="'.$navlink['popup'].'"') : '').
-					(isset($navlink['target']) ? (' TARGET="'.$navlink['target'].'"') : '').'>'.$navlink['label'].
+					'<A '
+					.((@$navlink['label'] == $hot_label_name_custom) ? ('style="color:#FFFFFF;background-color:#B94A48;"') : '').
+					' HREF="'.$navlink['url'].'">'.$navlink['label'].
 					'</A>'
 				);
 
@@ -553,9 +690,31 @@
 				$this->output('<SPAN CLASS="qa-'.$class.'-note">'.$navlink['note'].'</SPAN>');
 		}
 		
+		function output_split_bs($parts)
+		{
+			if (qa_is_logged_in()) {
+			$this->output('<li>'.$parts['data'].'</li>');
+			}
+		}
+		
+		function user_points_bs()
+		{
+			if (qa_is_logged_in()) {
+				$userpoints=qa_get_logged_in_points();
+				
+				$pointshtml=($userpoints==1)
+					? qa_lang_html_sub('main/1_point', '1', '1')
+					: qa_lang_html_sub('main/x_points', qa_html(number_format($userpoints)));
+						
+				$this->output('<li><a><span class="badge badge-info">',$pointshtml,'</span></a></li><li class="divider-vertical"></li>');
+			}
+
+		}
+		
 		function logged_in()
 		{
-			$this->output_split(@$this->content['loggedin'], 'qa-logged-in', 'DIV');
+			$this->output_split_bs(@$this->content['loggedin']);
+			$this->user_points_bs();
 		}
 		
 		function header_clear()
@@ -568,16 +727,13 @@
 		
 		function sidepanel()
 		{
-			$this->output('<DIV CLASS="qa-sidepanel">');
 			$this->widgets('side', 'top');
 			$this->sidebar();
 			$this->widgets('side', 'high');
 			$this->nav('cat', 1);
 			$this->widgets('side', 'low');
 			$this->output_raw(@$this->content['sidepanel']);
-			$this->feed();
 			$this->widgets('side', 'bottom');
-			$this->output('</DIV>', '');
 		}
 		
 		function sidebar()
@@ -585,7 +741,7 @@
 			$sidebar=@$this->content['sidebar'];
 			
 			if (!empty($sidebar)) {
-				$this->output('<DIV CLASS="qa-sidebar">');
+				$this->output('<DIV CLASS="alert alert-info">','<button type="button" class="close" data-dismiss="alert">&times;</button>');
 				$this->output_raw($sidebar);
 				$this->output('</DIV>', '');
 			}
@@ -596,9 +752,7 @@
 			$feed=@$this->content['feed'];
 			
 			if (!empty($feed)) {
-				$this->output('<DIV CLASS="qa-feed">');
-				$this->output('<A HREF="'.$feed['url'].'" CLASS="qa-feed-link">'.@$feed['label'].'</A>');
-				$this->output('</DIV>');
+				$this->output('<A HREF="'.$feed['url'].'" CLASS="btn">Get RSS <img alt="RSS" src="../assets/img/feed.png"/></A>');
 			}
 		}
 		
@@ -606,22 +760,14 @@
 		{
 			$content=$this->content;
 
-			$this->output('<DIV CLASS="qa-main'.(@$this->content['hidden'] ? ' qa-main-hidden' : '').'">');
-			
 			$this->widgets('main', 'top');
 			
 			$this->page_title_error();		
 			
 			$this->widgets('main', 'high');
 
-			/*if (isset($content['main_form_tags']))
-				$this->output('<FORM '.$content['main_form_tags'].'>');*/
-				
 			$this->main_parts($content);
 		
-			/*if (isset($content['main_form_tags']))
-				$this->output('</FORM>');*/
-				
 			$this->widgets('main', 'low');
 
 			$this->page_links();
@@ -629,7 +775,6 @@
 			
 			$this->widgets('main', 'bottom');
 
-			$this->output('</DIV> <!-- END qa-main -->', '');
 		}
 		
 		function page_title_error()
@@ -638,15 +783,17 @@
 			
 			if (isset($favorite))
 				$this->output('<FORM '.$favorite['form_tags'].'>');
-				
-			$this->output('<H1>');
+			$this->output('<div class="page-header">');
+			$this->output('<h1>');
 			$this->favorite();
 			$this->title();
-			$this->output('</H1>');
-
+			$this->output('</h1>');
+			$this->output('<h4>');
 			if (isset($this->content['error']))
 				$this->error(@$this->content['error']);
-
+			$this->output('</h4>');
+			
+			$this->output('</div>');
 			if (isset($favorite))
 				$this->output('</FORM>');
 		}
@@ -656,7 +803,7 @@
 			$favorite=@$this->content['favorite'];
 			
 			if (isset($favorite)) {
-				$this->output('<SPAN CLASS="qa-favoriting" '.@$favorite['favorite_tags'].'>');
+				$this->output('<SPAN '.@$favorite['favorite_tags'].'>');
 				$this->favorite_inner_html($favorite);
 				$this->output('</SPAN>');
 			}
@@ -671,21 +818,26 @@
 		function favorite_inner_html($favorite)
 		{
 			$this->favorite_button(@$favorite['favorite_add_tags'], 'qa-favorite');
-			$this->favorite_button(@$favorite['favorite_remove_tags'], 'qa-unfavorite');
+			$this->favorite_button_rm(@$favorite['favorite_remove_tags'], 'qa-unfavorite');
 		}
-		
+
 		function favorite_button($tags, $class)
 		{
 			if (isset($tags))
-				$this->output('<INPUT '.$tags.' TYPE="submit" VALUE="" CLASS="'.$class.
-					'-button" onmouseover="this.className=\''.$class.'-hover\';" onmouseout="this.className=\''.$class.'-button\';"/> ');
+				$this->output('<button '.$tags.' TYPE="submit" CLASS="btn"><i class="icon-star"></i></button> ');
+		}
+		
+		function favorite_button_rm($tags, $class)
+		{
+			if (isset($tags))
+				$this->output('<button '.$tags.' TYPE="submit" CLASS="btn"><i class="icon-trash"></i></button> ');
 		}
 		
 		function error($error)
 		{
 			if (strlen($error))
 				$this->output(
-					'<DIV CLASS="qa-error">',
+					'<DIV id="errorbox" CLASS="alert alert-error">',
 					$error,
 					'</DIV>'
 				);
@@ -734,8 +886,6 @@
 		{
 			$this->output('<DIV CLASS="qa-footer">');
 			
-			$this->nav('footer');
-			$this->attribution();
 			$this->footer_clear();
 			
 			$this->output('</DIV> <!-- END qa-footer -->', '');
@@ -807,7 +957,7 @@
 			$columns=$this->form_columns($form);
 			
 			if ($columns)
-				$this->output('<TABLE CLASS="qa-form-'.$form['style'].'-table">');
+				$this->output('<TABLE CLASS="form-horizontal">');
 			
 			$this->form_ok($form, $columns);
 			$this->form_fields($form, $columns);
@@ -824,7 +974,7 @@
 			if (!empty($form['ok']))
 				$this->output(
 					'<TR>',
-					'<TD COLSPAN="'.$columns.'" CLASS="qa-form-'.$form['style'].'-ok">',
+					'<TD COLSPAN="'.$columns.'">',
 					$form['ok'],
 					'</TD>',
 					'</TR>'
@@ -1028,7 +1178,7 @@
 			$hoverclass='qa-form-'.$style.'-hover qa-form-'.$style.'-hover-'.$key;
 			
 			$this->output('<INPUT'.rtrim(' '.@$button['tags']).' VALUE="'.@$button['label'].'" TITLE="'.@$button['popup'].'" TYPE="submit"'.
-				(isset($style) ? (' CLASS="'.$baseclass.'" onmouseover="this.className=\''.$hoverclass.'\';" onmouseout="this.className=\''.$baseclass.'\';"') : '').'/>');
+				(isset($style) ? (' CLASS="btn"') : '').'/>');
 		}
 		
 		function form_button_note($button, $style)
@@ -1115,19 +1265,17 @@
 		
 		function form_text_single_row($field, $style)
 		{
-			$this->output('<INPUT '.@$field['tags'].' TYPE="text" VALUE="'.@$field['value'].'" CLASS="qa-form-'.$style.'-text"/>');
+			$this->output('<INPUT '.@$field['tags'].' TYPE="text" VALUE="'.@$field['value'].'" CLASS="input-xlarge"/>');
 		}
 		
 		function form_text_multi_row($field, $style)
 		{
-			$this->output('<TEXTAREA '.@$field['tags'].' ROWS="'.(int)$field['rows'].'" COLS="40" CLASS="qa-form-'.$style.'-text">'.@$field['value'].'</TEXTAREA>');
+			$this->output('<TEXTAREA '.@$field['tags'].' ROWS="'.(int)$field['rows'].'" COLS="40" CLASS="span8">'.@$field['value'].'</TEXTAREA>');
 		}
 		
 		function form_error($field, $style, $columns)
 		{
-			$tag=($columns>1) ? 'SPAN' : 'DIV';
-			
-			$this->output('<'.$tag.' CLASS="qa-form-'.$style.'-error">'.$field['error'].'</'.$tag.'>');
+			$this->output('<div CLASS="alert alert-error">'.$field['error'].'</div>');
 		}
 		
 		function form_note($field, $style, $columns)
@@ -1207,7 +1355,7 @@
 		
 		function ranking_score($item, $class)
 		{
-			$this->output('<TD CLASS="'.$class.'-score">'.$item['score'].'</TD>');
+			$this->output('<TD CLASS="'.$class.'-score"><span class="badge badge-info">'.$item['score'].'</span></TD>');
 		}
 		
 		function list_vote_disabled($items)
@@ -1255,50 +1403,46 @@
 		function q_list($q_list)
 		{
 			if (isset($q_list['qs'])) {
-				$this->output('<DIV CLASS="qa-q-list'.($this->list_vote_disabled($q_list['qs']) ? ' qa-q-list-vote-disabled' : '').'">', '');
+				$this->output('<ul class="thumbnails">');
 				
 				foreach ($q_list['qs'] as $q_item)
 					$this->q_list_item($q_item);
-	
-				$this->output('</DIV> <!-- END qa-q-list -->', '');
+
+				$this->output('</ul>');
 			}
 		}
 		
 		function q_list_item($q_item)
 		{
-			$this->output('<DIV CLASS="qa-q-list-item'.rtrim(' '.@$q_item['classes']).'" '.@$q_item['tags'].'>');
-
-			$this->q_item_stats($q_item);
+			$this->output('<li class="span12"><div class="thumbnail"><DIV CLASS="caption">');
 			$this->q_item_main($q_item);
-			$this->q_item_clear();
-
-			$this->output('</DIV> <!-- END qa-q-list-item -->', '');
-		}
-		
-		function q_item_stats($q_item)
-		{
-			$this->output('<DIV CLASS="qa-q-item-stats">');
-			
-			$this->voting($q_item);
-			$this->a_count($q_item);
-
-			$this->output('</DIV>');
+			$this->output('</div></div></li>');
 		}
 		
 		function q_item_main($q_item)
 		{
-			$this->output('<DIV CLASS="qa-q-item-main">');
-			
-			$this->view_count($q_item);
 			$this->q_item_title($q_item);
+			$this->output('<p>');
+			$this->output('</p>');
 			$this->q_item_content($q_item);
-			
+			$this->output('<span class="meta-tags-info">');
 			$this->post_avatar_meta($q_item, 'qa-q-item');
+			$this->output('</span>');
 			$this->post_tags($q_item, 'qa-q-item');
+			$this->output('<p>');
 			$this->q_item_buttons($q_item);
-				
-			$this->output('</DIV>');
+			$this->q_item_stats($q_item);
+			$this->output('</p>');
 		}
+		
+		function q_item_stats($q_item)
+		{
+			$this->a_count($q_item);
+			$this->view_count($q_item);
+			$this->voting($q_item);
+		}
+		
+
 		
 		function q_item_clear()
 		{
@@ -1311,9 +1455,9 @@
 		function q_item_title($q_item)
 		{
 			$this->output(
-				'<DIV CLASS="qa-q-item-title">',
-				'<A HREF="'.$q_item['url'].'">'.$q_item['title'].'</A>',
-				'</DIV>'
+				'<div class="TitleName">',
+				'<A class="title" HREF="'.$q_item['url'].'">'.$q_item['title'].'</A>',
+				'</div>'
 			);
 		}
 		
@@ -1329,18 +1473,16 @@
 		function q_item_buttons($q_item)
 		{
 			if (!empty($q_item['form'])) {
-				$this->output('<DIV CLASS="qa-q-item-buttons">');
 				$this->form($q_item['form']);
-				$this->output('</DIV>');
 			}
 		}
 		
 		function voting($post)
 		{
 			if (isset($post['vote_view'])) {
-				$this->output('<DIV CLASS="qa-voting '.(($post['vote_view']=='updown') ? 'qa-voting-updown' : 'qa-voting-net').'" '.@$post['vote_tags'].'>');
+				$this->output('<span CLASS="qa-voting '.(($post['vote_view']=='updown') ? 'qa-voting-updown' : 'qa-voting-net').'" '.@$post['vote_tags'].'>');
 				$this->voting_inner_html($post);
-				$this->output('</DIV>');
+				$this->output('</span>');
 			}
 		}
 		
@@ -1348,48 +1490,57 @@
 		{
 			$this->vote_buttons($post);
 			$this->vote_count($post);
-			$this->vote_clear();
 		}
 		
+
+		function post_hover_button_bs($post, $element, $value, $class)
+		{
+			if (isset($post[$element]))
+				$this->output('<button '.$post[$element].' TYPE="submit" CLASS="btn"><i class="'.$value.'"></i></button>');
+		}
+		
+		function post_disabled_button_bs($post, $element, $value, $class)
+		{
+			if (isset($post[$element]))
+				$this->output('<button '.$post[$element].' TYPE="submit" DISABLED="disabled" class="btn disabled"><i class="'.$value.'"></i></button>');
+		}
+
+
 		function vote_buttons($post)
 		{
-			$this->output('<DIV CLASS="qa-vote-buttons '.(($post['vote_view']=='updown') ? 'qa-vote-buttons-updown' : 'qa-vote-buttons-net').'">');
-
 			switch (@$post['vote_state'])
 			{
 				case 'voted_up':
-					$this->post_hover_button($post, 'vote_up_tags', '+', 'qa-vote-one-button qa-voted-up');
+					$this->post_hover_button_bs($post, 'vote_up_tags', 'icon-thumbs-down', 'qa-vote-one-button qa-voted-up');
 					break;
 					
 				case 'voted_up_disabled':
-					$this->post_disabled_button($post, 'vote_up_tags', '+', 'qa-vote-one-button qa-vote-up');
+					$this->post_disabled_button_bs($post, 'vote_up_tags', 'icon-thumbs-up', 'qa-vote-one-button qa-vote-up');
 					break;
 					
 				case 'voted_down':
-					$this->post_hover_button($post, 'vote_down_tags', '&ndash;', 'qa-vote-one-button qa-voted-down');
+					$this->post_hover_button_bs($post, 'vote_down_tags', 'icon-thumbs-up', 'qa-vote-one-button qa-voted-down');
 					break;
 					
 				case 'voted_down_disabled':
-					$this->post_disabled_button($post, 'vote_down_tags', '&ndash;', 'qa-vote-one-button qa-vote-down');
+					$this->post_disabled_button_bs($post, 'vote_down_tags', 'icon-thumbs-down', 'qa-vote-one-button qa-vote-down');
 					break;
 					
 				case 'up_only':
-					$this->post_hover_button($post, 'vote_up_tags', '+', 'qa-vote-first-button qa-vote-up');
-					$this->post_disabled_button($post, 'vote_down_tags', '', 'qa-vote-second-button qa-vote-down');
+					$this->post_hover_button_bs($post, 'vote_up_tags', 'icon-thumbs-up', 'qa-vote-first-button qa-vote-up');
+					$this->post_disabled_button_bs($post, 'vote_down_tags', 'icon-thumbs-down', 'qa-vote-second-button qa-vote-down');
 					break;
 				
 				case 'enabled':
-					$this->post_hover_button($post, 'vote_up_tags', '+', 'qa-vote-first-button qa-vote-up');
-					$this->post_hover_button($post, 'vote_down_tags', '&ndash;', 'qa-vote-second-button qa-vote-down');
+					$this->post_hover_button_bs($post, 'vote_up_tags', 'icon-thumbs-up', 'qa-vote-first-button qa-vote-up');
+					$this->post_hover_button_bs($post, 'vote_down_tags', 'icon-thumbs-down', 'qa-vote-second-button qa-vote-down');
 					break;
 
 				default:
-					$this->post_disabled_button($post, 'vote_up_tags', '', 'qa-vote-first-button qa-vote-up');
-					$this->post_disabled_button($post, 'vote_down_tags', '', 'qa-vote-second-button qa-vote-down');
+					$this->post_disabled_button_bs($post, 'vote_up_tags', 'icon-thumbs-up', 'qa-vote-first-button qa-vote-up');
+					$this->post_disabled_button_bs($post, 'vote_down_tags', 'icon-thumbs-down', 'qa-vote-second-button qa-vote-down');
 					break;
 			}
-
-			$this->output('</DIV>');
 		}
 		
 		function vote_count($post)
@@ -1397,16 +1548,14 @@
 			// You can also use $post['upvotes_raw'], $post['downvotes_raw'], $post['netvotes_raw'] to get
 			// raw integer vote counts, for graphing or showing in other non-textual ways
 			
-			$this->output('<DIV CLASS="qa-vote-count '.(($post['vote_view']=='updown') ? 'qa-vote-count-updown' : 'qa-vote-count-net').'">');
-
 			if ($post['vote_view']=='updown') {
-				$this->output_split($post['upvotes_view'], 'qa-upvote-count');
-				$this->output_split($post['downvotes_view'], 'qa-downvote-count');
+				$this->output('<span class="label label-success">',$post['upvotes_view']['data']);
+				$this->output($post['upvotes_view']['suffix'],'</span>','&nbsp;');
+				$this->output('<span class="label label-important">',$post['downvotes_view']['data']);
+				$this->output($post['downvotes_view']['suffix'],'</span>');
 			
 			} else
 				$this->output_split($post['netvotes_view'], 'qa-netvote-count');
-
-			$this->output('</DIV>');
 		}
 		
 		function vote_clear()
@@ -1417,19 +1566,38 @@
 			);
 		}
 		
+		
+		function output_split_a_count($parts, $class, $outertag='SPAN', $innertag='SPAN', $extraclass=null)
+		{
+			if (empty($parts) && ($outertag!='TD'))
+				return;
+				
+			$this->output(
+				(strlen(@$parts['data']) ? ('<a class="btn disabled">'.$parts['data'].'') : '').
+				(strlen(@$parts['suffix']) ? (''.$parts['suffix'].'</a>') : '')
+			);
+		}
+		
+		
 		function a_count($post)
 		{
 			// You can also use $post['answers_raw'] to get a raw integer count of answers
 			
-			$this->output_split(@$post['answers'], 'qa-a-count', 'SPAN', 'SPAN',
+			$this->output_split_a_count(@$post['answers'], 'qa-a-count', 'SPAN', 'SPAN',
 				@$post['answer_selected'] ? 'qa-a-count-selected' : (@$post['answers_raw'] ? null : 'qa-a-count-zero'));
+
 		}
 		
 		function view_count($post)
 		{
 			// You can also use $post['views_raw'] to get a raw integer count of views
 			
-			$this->output_split(@$post['views'], 'qa-view-count');
+			if(isset($post['views']['data']) && $post['views']['suffix']) {
+			$this->output('<a class="btn disabled">',$post['views']['data']);
+			$this->output($post['views']['suffix'],'</a>');
+			
+			}
+
 		}
 		
 		function avatar($post, $class)
@@ -1443,14 +1611,14 @@
 			$this->output('<DIV CLASS="qa-a-selection">');
 			
 			if (isset($post['select_tags']))
-				$this->post_hover_button($post, 'select_tags', '', 'qa-a-select');
+				$this->post_hover_button_bs($post, 'select_tags', 'icon-ok', 'qa-a-select');
 			elseif (isset($post['unselect_tags']))
-				$this->post_hover_button($post, 'unselect_tags', '', 'qa-a-unselect');
+				$this->post_hover_button_bs($post, 'unselect_tags', 'icon-remove', 'qa-a-unselect');
 			elseif ($post['selected'])
 				$this->output('<DIV CLASS="qa-a-selected">&nbsp;</DIV>');
 			
 			if (isset($post['select_text']))
-				$this->output('<DIV CLASS="qa-a-selected-text">'.@$post['select_text'].'</DIV>');
+				$this->output('<span class="label label-success"><i class="icon-ok icon-white"></i>',@$post['select_text'],'</span>');
 			
 			$this->output('</DIV>');
 		}
@@ -1470,10 +1638,8 @@
 		
 		function post_avatar_meta($post, $class, $avatarprefix=null, $metaprefix=null, $metaseparator='<BR/>')
 		{
-			$this->output('<SPAN CLASS="'.$class.'-avatar-meta">');
 			$this->post_avatar($post, $class, $avatarprefix);
 			$this->post_meta($post, $class, $metaprefix, $metaseparator);
-			$this->output('</SPAN>');
 		}
 		
 		function post_avatar($post, $class, $prefix=null)
@@ -1482,11 +1648,11 @@
 				if (isset($prefix))
 					$this->output($prefix);
 
-				$this->output('<SPAN CLASS="'.$class.'-avatar">', $post['avatar'], '</SPAN>');
+				$this->output('<SPAN>',$post['avatar'], '</SPAN>');
 			}
 		}
 		
-		function post_meta($post, $class, $prefix=null, $separator='<BR/>')
+function post_meta($post, $class, $prefix=null, $separator='<BR/>')
 		{
 			$this->output('<SPAN CLASS="'.$class.'-meta">');
 			
@@ -1595,25 +1761,25 @@
 		function post_tags($post, $class)
 		{
 			if (!empty($post['q_tags'])) {
-				$this->output('<DIV CLASS="'.$class.'-tags">');
+				$this->output('<span CLASS="InlineTags Meta"><p>');
 				$this->post_tag_list($post, $class);
-				$this->output('</DIV>');
+				$this->output('</p></span>');
 			}
 		}
 		
 		function post_tag_list($post, $class)
 		{
-			$this->output('<UL CLASS="'.$class.'-tag-list">');
+			$this->output('<UL><i class="icon-tags"></i>');
 			
-			foreach ($post['q_tags'] as $taghtml)
-				$this->post_tag_item($taghtml, $class);
+			foreach ($post['q_tags'] as $tag)
+				$this->post_tag_item($tag, $class);
 				
 			$this->output('</UL>');
 		}
 		
-		function post_tag_item($taghtml, $class)
+		function post_tag_item($tag, $class)
 		{
-			$this->output('<LI CLASS="'.$class.'-tag-item">'.$taghtml.'</LI>');
+			$this->output('<LI>'.$tag.'</LI>');
 		}
 	
 		function page_links()
@@ -1621,13 +1787,7 @@
 			$page_links=@$this->content['page_links'];
 			
 			if (!empty($page_links)) {
-				$this->output('<DIV CLASS="qa-page-links">');
-				
-				$this->page_links_label(@$page_links['label']);
 				$this->page_links_list(@$page_links['items']);
-				$this->page_links_clear();
-				
-				$this->output('</DIV>');
 			}
 		}
 		
@@ -1640,7 +1800,7 @@
 		function page_links_list($page_items)
 		{
 			if (!empty($page_items)) {
-				$this->output('<UL CLASS="qa-page-links-list">');
+				$this->output('<div class="pagination pagination-left"><UL>');
 				
 				$index=0;
 				
@@ -1654,15 +1814,14 @@
 				
 				$this->clear_context('page_index');
 				
-				$this->output('</UL>');
+				$this->output('</UL></div>');
 			}
 		}
 		
 		function page_links_item($page_link)
 		{
-			$this->output('<LI CLASS="qa-page-links-item">');
 			$this->page_link_content($page_link);
-			$this->output('</LI>');
+
 		}
 		
 		function page_link_content($page_link)
@@ -1672,23 +1831,23 @@
 			
 			switch ($page_link['type']) {
 				case 'this':
-					$this->output('<SPAN CLASS="qa-page-selected">'.$label.'</SPAN>');
+					$this->output('<li class="disabled"><SPAN>'.$label.'</SPAN>');
 					break;
 				
 				case 'prev':
-					$this->output('<A HREF="'.$url.'" CLASS="qa-page-prev">&laquo; '.$label.'</A>');
+					$this->output('<li><A HREF="'.$url.'">&laquo;</A></li>');
 					break;
 				
 				case 'next':
-					$this->output('<A HREF="'.$url.'" CLASS="qa-page-next">'.$label.' &raquo;</A>');
+					$this->output('<li><A HREF="'.$url.'">&raquo;</A></li>');
 					break;
 				
 				case 'ellipsis':
-					$this->output('<SPAN CLASS="qa-page-ellipsis">...</SPAN>');
+					$this->output('<li class="disabled"><SPAN CLASS="qa-page-ellipsis">...</SPAN></li>');
 					break;
 				
 				default:
-					$this->output('<A HREF="'.$url.'" CLASS="qa-page-link">'.$label.'</A>');
+					$this->output('<li><A HREF="'.$url.'">'.$label.'</A></li>');
 					break;
 			}
 		}
@@ -1706,7 +1865,7 @@
 			$suggest=@$this->content['suggest_next'];
 			
 			if (!empty($suggest)) {
-				$this->output('<DIV CLASS="qa-suggest-next">');
+				$this->output('<DIV CLASS="alert alert-success">');
 				$this->output($suggest);
 				$this->output('</DIV>');
 			}
@@ -1715,8 +1874,7 @@
 		function q_view($q_view)
 		{
 			if (!empty($q_view)) {
-				$this->output('<DIV CLASS="qa-q-view'.(@$q_view['hidden'] ? ' qa-q-view-hidden' : '').rtrim(' '.@$q_view['classes']).'"'.rtrim(' '.@$q_view['tags']).'>');
-				
+
 				if (isset($q_view['main_form_tags']))
 					$this->output('<FORM '.$q_view['main_form_tags'].'>'); // form for voting buttons
 				
@@ -1727,42 +1885,43 @@
 					
 				$this->a_count($q_view);
 				$this->q_view_main($q_view);
-				$this->q_view_clear();
-				
-				$this->output('</DIV> <!-- END qa-q-view -->', '');
 			}
 		}
 		
 		function q_view_main($q_view)
 		{
-			$this->output('<DIV CLASS="qa-q-view-main">');
+			$this->output('<ul class="thumbnails"><li class="span12"><div class="thumbnail"><div class="caption">');
+			
 
 			if (isset($q_view['main_form_tags']))
 				$this->output('<FORM '.$q_view['main_form_tags'].'>'); // form for buttons on question
 
 			$this->q_view_content($q_view);
+			$this->output('</div></div></li></ul>');
 			$this->q_view_extra($q_view);
 			$this->q_view_follows($q_view);
 			$this->q_view_closed($q_view);
 			$this->post_tags($q_view, 'qa-q-view');
+			
 			$this->post_avatar_meta($q_view, 'qa-q-view');
+			$this->output('</span>');
+			$this->output('<p></p>');
 			$this->q_view_buttons($q_view);
+			$this->output('<p></p>');
 			$this->c_list(@$q_view['c_list'], 'qa-q-view');
 			
 			if (isset($q_view['main_form_tags']))
 				$this->output('</FORM>');
 			
 			$this->c_form(@$q_view['c_form']);
+			$this->c_form(@$q_view['c_form']);
 			
-			$this->output('</DIV> <!-- END qa-q-view-main -->');
 		}
 		
 		function q_view_content($q_view)
 		{
 			if (!empty($q_view['content'])) {
-				$this->output('<DIV CLASS="qa-q-view-content">');
 				$this->output_raw($q_view['content']);
-				$this->output('</DIV>');
 			}
 		}
 		
@@ -1811,6 +1970,7 @@
 			if (!empty($q_view['form'])) {
 				$this->output('<DIV CLASS="qa-q-view-buttons">');
 				$this->form($q_view['form']);
+				//print_r($q_view['form']);
 				$this->output('</DIV>');
 			}
 		}
@@ -1837,7 +1997,7 @@
 		function a_list($a_list)
 		{
 			if (!empty($a_list)) {
-				$this->section(@$a_list['title']);
+				$this->output('<div class="page-header"><h2>',$a_list['title'],'</h2></div>');
 				
 				$this->output('<DIV CLASS="qa-a-list'.($this->list_vote_disabled($a_list['as']) ? ' qa-a-list-vote-disabled' : '').'" '.@$a_list['tags'].'>', '');
 				
@@ -1870,7 +2030,7 @@
 		
 		function a_item_main($a_item)
 		{
-			$this->output('<DIV CLASS="qa-a-item-main">');
+			$this->output('<ul class="thumbnails"><li class="span12"><div class="thumbnail"><div class="caption">');
 			
 			if (isset($a_item['main_form_tags']))
 				$this->output('<FORM '.$a_item['main_form_tags'].'>'); // form for buttons on answer
@@ -1883,12 +2043,14 @@
 			$this->a_selection($a_item);
 			$this->error(@$a_item['error']);
 			$this->a_item_content($a_item);
+			$this->output('<p></p>');
 			$this->post_avatar_meta($a_item, 'qa-a-item');
-			
+			$this->output('<p></p>');
 			if ($a_item['hidden'] || $a_item['selected'])
 				$this->output('</DIV>');
 			
 			$this->a_item_buttons($a_item);
+			$this->output('<p></p>');
 			
 			$this->c_list(@$a_item['c_list'], 'qa-a-item');
 
@@ -1897,7 +2059,7 @@
 
 			$this->c_form(@$a_item['c_form']);
 
-			$this->output('</DIV> <!-- END qa-a-item-main -->');
+			$this->output('</div></div></li></ul>');
 		}
 		
 		function a_item_clear()
@@ -1937,12 +2099,14 @@
 		function c_list($c_list, $class)
 		{
 			if (!empty($c_list)) {
-				$this->output('', '<DIV CLASS="'.$class.'-c-list"'.(@$c_list['hidden'] ? ' STYLE="display:none;"' : '').' '.@$c_list['tags'].'>');
 				
-				foreach ($c_list['cs'] as $c_item)
+				$this->output('<ul class="thumbnails">');
+				foreach ($c_list['cs'] as $c_item) {
+					$this->output('<li class="span89"><div class="thumbnail"><div class="caption">');
 					$this->c_list_item($c_item);
-				
-				$this->output('</DIV> <!-- END qa-c-list -->', '');
+					$this->output('</div></div></li>'); }
+				$this->output('</ul>');
+
 			}
 		}
 		
@@ -1969,10 +2133,9 @@
 			else
 				$this->c_item_content($c_item);
 			
-			$this->output('<DIV CLASS="qa-c-item-footer">');
+			$this->output('<p></p>');
 			$this->post_avatar_meta($c_item, 'qa-c-item');
 			$this->c_item_buttons($c_item);
-			$this->output('</DIV>');
 		}
 		
 		function c_item_link($c_item)
@@ -1999,9 +2162,8 @@
 		function c_item_buttons($c_item)
 		{
 			if (!empty($c_item['form'])) {
-				$this->output('<DIV CLASS="qa-c-item-buttons">');
+				$this->output('<p></p>');
 				$this->form($c_item['form']);
-				$this->output('</DIV>');
 			}
 		}
 		

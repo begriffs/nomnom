@@ -107,7 +107,7 @@
 	else
 		$forgotpath=qa_path('forgot', array('e' => $inemailhandle));
 	
-	$forgothtml='<A HREF="'.qa_html($forgotpath).'">'.qa_lang_html('users/forgot_link').'</A>';
+	$forgothtml='<A class="btn btn-danger" HREF="'.qa_html($forgotpath).'">'.qa_lang_html('users/forgot_link').'</A>';
 	
 	$qa_content['form']=array(
 		'tags' => 'METHOD="POST" ACTION="'.qa_self_html().'"',

@@ -74,8 +74,10 @@
 				$params=array('cat' => end($qa_content['categoryids']));
 			else
 				$params=null;
-?>
-<DIV CLASS="qa-ask-box">
+				
+				/* ORIGINAL
+				
+				<p>
 	<FORM METHOD="POST" ACTION="<?php echo qa_path_html('ask', $params); ?>">
 		<TABLE CLASS="qa-form-tall-table" STYLE="width:100%">
 			<TR STYLE="vertical-align:middle;">
@@ -91,13 +93,20 @@
 			}
 ?>
 				<TD CLASS="qa-form-tall-data" STYLE="padding:8px;" WIDTH="*">
-					<INPUT NAME="title" TYPE="text" CLASS="qa-form-tall-text" STYLE="width:95%;">
+					<INPUT NAME="title" TYPE="text" CLASS="input span23">
 				</TD>
 			</TR>
 		</TABLE>
 		<INPUT TYPE="hidden" NAME="doask1" VALUE="1">
 	</FORM>
-</DIV>
+</p>
+
+*/
+?>
+	<FORM METHOD="POST" ACTION="<?php echo qa_path_html('ask', $params); ?>">
+					<INPUT NAME="title" TYPE="text" CLASS="input span23">
+	<INPUT TYPE="hidden" NAME="doask1" VALUE="1">
+	</FORM>
 <?php
 		}
 	
