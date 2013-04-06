@@ -477,7 +477,7 @@
 		function navbar_bs_brand()
 		{
 		
-			$this->output('<a class="brand" href="https://github.com/harshjv/q2a-bootstrap">Q2A-BS</a>');
+			$this->output('<a class="brand" href="https://www.inmadison.co">InMadison</a>');
 		
 		}
 		
