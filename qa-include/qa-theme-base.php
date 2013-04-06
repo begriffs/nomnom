@@ -536,12 +536,7 @@
 		function nav_user_search()
 		{
 
-			$this->output('<ul class="nav">
-							<li><a href="/">Home</a></li>
-							<li class="divider-vertical"></li>
-							<li class="dropdown">
-							<a data-toggle="dropdown" class="dropdown-toggle" role="button" href="#" id="drop1">Browse <b class="caret"></b></a>
-							<ul aria-labelledby="drop1" role="menu" class="dropdown-menu">
+			$this->output('<ul class="nav dropdown pull-right">
 							<li><a class="" href="/questions">Questions</a></li>
 							<li><a class="" href="/unanswered">Unanswered</a></li>
 							<li><a class="" href="/activity">Activity</a></li>
